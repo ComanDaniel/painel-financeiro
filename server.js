@@ -23,14 +23,14 @@ const TIMEOUT_MS = 8000;
    ====================================================================== */
 
 // Feeds RSS/Atom. Se algum endereço mudar, ele aparece como "falha" no rodapé do app.
+// Apenas veículos focados em mercado financeiro; mesmo assim, tudo passa por um filtro de assunto (ver CATS).
 const FEEDS = [
-  { name: 'InfoMoney',        url: 'https://www.infomoney.com.br/feed/' },
+  { name: 'InfoMoney',        url: 'https://www.infomoney.com.br/mercados/feed/' },
   { name: 'Money Times',      url: 'https://www.moneytimes.com.br/feed/' },
-  { name: 'G1 Economia',      url: 'https://g1.globo.com/rss/g1/economia/' },
-  { name: 'Agência Brasil',   url: 'https://agenciabrasil.ebc.com.br/rss/economia/feed.xml' },
-  { name: 'Exame',            url: 'https://exame.com/feed/' },
-  { name: 'CNN Brasil',       url: 'https://www.cnnbrasil.com.br/economia/feed/' },
-  { name: 'Investing.com BR', url: 'https://br.investing.com/rss/news.rss' }
+  { name: 'Investing.com BR', url: 'https://br.investing.com/rss/news.rss' },
+  { name: 'Seu Dinheiro',     url: 'https://www.seudinheiro.com/feed/' },
+  { name: 'E-Investidor',     url: 'https://einvestidor.estadao.com.br/feed/' },
+  { name: 'Exame Invest',     url: 'https://exame.com/invest/feed/' }
 ];
 
 // Cotações (Yahoo Finance, endpoint público não oficial).
@@ -335,23 +335,35 @@ function parseFeed(xml, source) {
   return items;
 }
 
+// Só entra notícia que casar com algum tema de mercado financeiro abaixo. O resto é descartado.
+// `ctx` (opcional) exige também um termo de mercado no texto (evita política/eleição "pura").
+const MKT_CTX = /\b(mercados?|bolsa|ibovespa|dolar|cambio|juros|fiscal|investidor\w*|ativos|risco|acoes|titulos|tesouro|selic|di futuro)\b/;
 const CATS = [
-  ['Juros & Inflação',      /\b(selic|copom|ipca\w*|igp-?m|inpc|inflac\w*|deflac\w*|juros|taxa basica|focus|cdi|di futuro)\b/],
-  ['Trabalho & Previdência', /\b(inss|fgts|previdenc\w*|trabalhist\w*|clt|esocial|aposentador\w*|salario minimo|seguro-desemprego|imposto de renda|irrf|irpf|folha de pagamento|sindicat\w*|caged|pasep|reforma tributaria)\b/],
-  ['Commodities & Cripto',  /\b(petroleo|brent|wti|ouro|bitcoin|btc|cripto\w*|ethereum|commodit\w*|minerio|soja|etanol|gasolina|diesel|opep)\b/],
-  ['Mundo',                 /\b(fed|federal reserve|eua|estados unidos|wall street|china|europa|zona do euro|japao|bce|trump|nasdaq|s&p|dow jones|treasuries|ormuz|oriente medio|tarifa\w*)\b/],
-  ['Política & Fiscal',     /\b(governo|fiscal|arcabouco|congresso|senado|camara|eleic\w*|lula|haddad|orcamento|divida publica|meta fiscal|stf|pec|bolsa familia|imposto\w*|tribut\w*)\b/],
-  ['Atividade & Emprego',   /\b(pib|desemprego|emprego\w*|desocupac\w*|pnad|industri\w*|varejo|vendas|producao|ibc-?br|atividade economica|consumo)\b/],
-  ['Mercados',              /\b(ibovespa|bolsa|b3|dolar|acoes|acao|cambio|fundos|fii\w*|dividendos|balanco|mercado)\b/]
+  ['Juros & Inflação',     /\b(selic|copom|ipca\w*|igp-?m|inpc|inflac\w*|deflac\w*|juros|taxa basica|boletim focus|focus|cdi|di futuro|curva de juros|tesouro (direto|selic|ipca|prefixado)|renda fixa)\b/],
+  ['Commodities & Cripto', /\b(petroleo|brent|wti|ouro|bitcoin|btc|cripto\w*|ethereum|commodit\w*|minerio|soja|etanol|opep|opec)\b/],
+  ['Mundo',                /\b(fed|fomc|federal reserve|wall street|nasdaq|s&p 500|dow jones|treasuries|treasury|banco central europeu|bce|banco do japao|boj|banco da inglaterra|boe|ormuz|oriente medio|tarifa\w*)\b/],
+  ['Política & Fiscal',    /\b(arcabouco fiscal|meta fiscal|risco fiscal|divida publica|resultado primario|orcamento|haddad|reforma tributaria|bolsa familia|gastos publicos|superavit|deficit)\b/],
+  ['Política & Fiscal',    /\b(eleic\w*|pesquisa eleitoral|datafolha|atlasintel|quaest|campanha)\b/, MKT_CTX],
+  ['Atividade & Emprego',  /\b(pib|ibc-?br|desemprego|desocupac\w*|pnad|caged|producao industrial|vendas no varejo|atividade economica|balanca comercial|payroll|pce)\b/],
+  ['Mercados',             /\b(ibovespa|bolsa|b3|dolar|cambio|acoes|acao|small caps|fii\w*|fundos imobiliarios|dividendos|proventos|balanco|resultado do (1|2|3|4)?\w* ?(tri|trimestre)|ipo|oferta de acoes|recomendacao|preco-alvo|petrobras|petr4|vale|vale3|itau|bradesco|banco do brasil|btg|xp|nubank|mercado financeiro|mercados|mercado de capitais|tesouro|investidor\w*|cvm)\b/]
 ];
+// Assuntos que não são "mercado financeiro" mesmo quando o veículo é financeiro.
+const BLOCK = /\b(mega-?sena|lotofacil|quina|loteria\w*|horoscopo|bbb|futebol|novela|receita de|cupom|black friday|imposto de renda|irpf|restituicao|inss|fgts|aposentadoria|esocial|cnh|iptu|ipva|pix parcelado|consorcio|financiamento imobiliario|emprestimo consignado|cartao de credito|score|serasa|cpf)\b/;
+// Notícias que costumam "mexer" no mercado (mesmo tipo de evento do calendário econômico).
+const IMPACT = /\b(copom|selic|fed|fomc|payroll|ipca(-15)?|igp-?m|pib|pce|cpi|banco central|bce|boj|opep|opec|ormuz|tarifa\w*|arcabouco fiscal|meta fiscal|rating|intervencao|leilao de linha|ata do copom|boletim focus|decisao de juros)\b/;
+
 const strip = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+/** Devolve a categoria de mercado ou null (=> descartar). */
 function categorize(title, summary) {
   const t = strip(title);
-  for (const [name, re] of CATS) if (re.test(t)) return name;
   const full = strip(title + ' ' + (summary || ''));
-  for (const [name, re] of CATS) if (re.test(full)) return name;
-  return 'Economia';
+  if (BLOCK.test(t)) return null;
+  for (const [name, re, ctx] of CATS) if (re.test(t) && (!ctx || ctx.test(full))) return name;
+  if (BLOCK.test(full)) return null;
+  for (const [name, re, ctx] of CATS) if (re.test(full) && (!ctx || ctx.test(full))) return name;
+  return null;
 }
+const isImpact = (title) => IMPACT.test(strip(title));
 
 async function buildNews() {
   const results = await Promise.allSettled(
@@ -362,7 +374,7 @@ async function buildNews() {
   results.forEach((r, i) => {
     const f = FEEDS[i];
     if (r.status === 'fulfilled') {
-      const newest = r.value.slice().sort((a, b) => b.ts - a.ts).slice(0, 30);
+      const newest = r.value.slice().sort((a, b) => b.ts - a.ts).slice(0, 40);
       sources.push({ name: f.name, ok: true, count: newest.length });
       all = all.concat(newest);
     } else {
@@ -378,8 +390,10 @@ async function buildNews() {
       seen.add(k);
       return true;
     })
-    .slice(0, 120)
-    .map((n) => ({ title: n.title, link: n.link, source: n.source, ts: n.ts, summary: n.summary, cat: categorize(n.title, n.summary) }));
+    .map((n) => ({ title: n.title, link: n.link, source: n.source, ts: n.ts, summary: n.summary, cat: categorize(n.title, n.summary), impact: isImpact(n.title) }))
+    .filter((n) => n.cat) // só mercado financeiro
+    .slice(0, 120);
+  sources.forEach((s) => { if (s.ok) s.kept = items.filter((n) => n.source === s.name).length; });
   return { updatedAt: Date.now(), items, sources };
 }
 
@@ -390,7 +404,7 @@ const INDEX_PATH = path.join(__dirname, 'index.html');
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'no-referrer',
-  'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+  'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://sslecal2.investing.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 };
 
 function sendJson(res, obj, status) {

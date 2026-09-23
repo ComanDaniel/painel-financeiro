@@ -80,6 +80,12 @@ th{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.
 tr:last-child td{border-bottom:0}
 footer{margin-top:28px;color:var(--muted);font-size:.75rem;line-height:1.5}
 footer p{margin:0 0 8px}
+.hint{color:var(--muted);font-size:.8rem;margin:14px 0 10px}
+.calwrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:14px}
+.calwrap iframe{display:block;width:100%;min-width:600px;height:680px;border:0}
+.powered{font-size:.72rem;color:var(--muted);margin:8px 0 0}
+.powered a{color:var(--accent);font-weight:700;text-decoration:none}
+.tab{font-size:.88rem;padding:10px 6px}
 [hidden]{display:none !important}
 </style>
 </head>
@@ -96,6 +102,7 @@ footer p{margin:0 0 8px}
 
   <div class="tabs" role="tablist" aria-label="Seções">
     <button class="tab" role="tab" id="tab-news" aria-controls="panel-news" aria-selected="true">Notícias</button>
+    <button class="tab" role="tab" id="tab-cal" aria-controls="panel-cal" aria-selected="false">Calendário</button>
     <button class="tab" role="tab" id="tab-ind" aria-controls="panel-ind" aria-selected="false">Indicadores</button>
   </div>
 
@@ -107,6 +114,13 @@ footer p{margin:0 0 8px}
     </div>
     <div id="newserr"></div>
     <div id="news"><div class="skel"></div></div>
+  </section>
+
+  <section id="panel-cal" role="tabpanel" aria-labelledby="tab-cal" hidden>
+    <p class="hint">Calendário econômico com os eventos que costumam mexer no mercado (juros, inflação, emprego, PIB). O resultado (“Atual”) aparece assim que é divulgado. Use o seletor do próprio calendário para trocar o dia ou o fuso horário.</p>
+    <div class="calwrap"><iframe id="calframe" title="Calendário econômico" loading="lazy" referrerpolicy="no-referrer"></iframe></div>
+    <p class="powered">Calendário Econômico fornecido por <a href="https://br.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer">Investing.com Brasil</a>, o portal líder financeiro.</p>
+    <div class="group"><h2>Notícias de alto impacto agora</h2><div id="impact"></div></div>
   </section>
 
   <section id="panel-ind" role="tabpanel" aria-labelledby="tab-ind" hidden>
@@ -203,21 +217,35 @@ function renderNews(){
     list.appendChild(el('p', 'empty', 'Nenhuma notícia encontrada para esse filtro.'));
     return;
   }
-  items.forEach((n) => {
-    const card = el('article', 'card');
-    const meta = el('div', 'meta');
-    meta.appendChild(el('span', 'tag', n.cat));
-    if (n.ts) meta.appendChild(el('span', '', whenLabel(n.ts)));
-    card.appendChild(meta);
-    card.appendChild(el('h3', 'title', n.title));
-    if (n.summary) card.appendChild(el('p', 'text', n.summary));
-    if (/^https?:\/\//i.test(n.link)){
-      const a = el('a', 'src', 'Ler em ' + n.source + ' ↗');
-      a.href = n.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
-      card.appendChild(a);
-    }
-    list.appendChild(card);
-  });
+  items.forEach((n) => list.appendChild(newsCard(n)));
+}
+
+function newsCard(n){
+  const card = el('article', 'card');
+  const meta = el('div', 'meta');
+  meta.appendChild(el('span', 'tag', n.cat));
+  if (n.ts) meta.appendChild(el('span', '', whenLabel(n.ts)));
+  card.appendChild(meta);
+  card.appendChild(el('h3', 'title', n.title));
+  if (n.summary) card.appendChild(el('p', 'text', n.summary));
+  if (/^https?:\/\//i.test(n.link)){
+    const a = el('a', 'src', 'Ler em ' + n.source + ' ↗');
+    a.href = n.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    card.appendChild(a);
+  }
+  return card;
+}
+
+function renderImpact(){
+  const box = $('#impact');
+  box.textContent = '';
+  if (!state.news){ return; }
+  const items = state.news.items.filter((n) => n.impact).slice(0, 12);
+  if (!items.length){
+    box.appendChild(el('p', 'empty', 'Nenhuma notícia de alto impacto no momento.'));
+    return;
+  }
+  items.forEach((n) => box.appendChild(newsCard(n)));
 }
 
 async function loadNews(){
@@ -230,6 +258,7 @@ async function loadNews(){
     }
     buildChips();
     renderNews();
+    renderImpact();
     renderFooter();
   } catch (e) {
     $('#newserr').textContent = '';
@@ -307,7 +336,7 @@ async function loadInd(){
 function renderFooter(){
   const f = $('#footer');
   f.textContent = '';
-  const p1 = el('p', '', 'Conteúdo informativo, sem caráter de recomendação de investimento. Cotações vêm de fontes públicas e podem ter atraso de alguns minutos; séries oficiais (Selic, IPCA, PNAD etc.) vêm do Banco Central e só mudam quando há nova divulgação. Notícias mostram apenas título e trecho inicial: abra o link para a matéria completa.');
+  const p1 = el('p', '', 'Conteúdo informativo, sem caráter de recomendação de investimento. Cotações vêm de fontes públicas e podem ter atraso de alguns minutos; séries oficiais (Selic, IPCA, PNAD etc.) vêm do Banco Central e só mudam quando há nova divulgação. Notícias são filtradas para temas de mercado financeiro e mostram apenas título e trecho inicial: abra o link para a matéria completa. O calendário econômico é do Investing.com.');
   f.appendChild(p1);
   const fails = [];
   if (state.ind && state.ind.errors) state.ind.errors.forEach((e) => fails.push(e.id));
@@ -320,18 +349,24 @@ function renderFooter(){
 }
 
 /* ---------------- Abas e eventos ---------------- */
-const tabs = { news: $('#tab-news'), ind: $('#tab-ind') };
-const panels = { news: $('#panel-news'), ind: $('#panel-ind') };
+const tabs = { news: $('#tab-news'), cal: $('#tab-cal'), ind: $('#tab-ind') };
+const panels = { news: $('#panel-news'), cal: $('#panel-cal'), ind: $('#panel-ind') };
+
+// Widget oficial de calendário econômico do Investing.com (países: Brasil, EUA, Zona do Euro, China, Japão, Reino Unido, Alemanha)
+const CAL_URL = 'https://sslecal2.investing.com?columns=exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&importance=2,3&features=datepicker,timezone&countries=32,5,72,37,35,4,17&calType=day&timeZone=12&lang=12';
+let calLoaded = false;
 function showTab(name){
   Object.keys(tabs).forEach((k) => {
     const on = k === name;
     tabs[k].setAttribute('aria-selected', String(on));
     panels[k].hidden = !on;
   });
+  if (name === 'cal' && !calLoaded){ $('#calframe').src = CAL_URL; calLoaded = true; }
   try { localStorage.setItem('painel-tab', name); } catch (e) {}
   window.scrollTo({ top: 0 });
 }
 tabs.news.addEventListener('click', () => showTab('news'));
+tabs.cal.addEventListener('click', () => showTab('cal'));
 tabs.ind.addEventListener('click', () => showTab('ind'));
 $('#q').addEventListener('input', (e) => { state.q = e.target.value; renderNews(); });
 $('#refresh').addEventListener('click', () => { loadInd(); loadNews(); });
@@ -345,7 +380,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 buildChips();
-try { if (localStorage.getItem('painel-tab') === 'ind') showTab('ind'); } catch (e) {}
+try { const saved = localStorage.getItem('painel-tab'); if (saved === 'ind' || saved === 'cal') showTab(saved); } catch (e) {}
 loadInd();
 loadNews();
 </script>
