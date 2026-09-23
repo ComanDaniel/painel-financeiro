@@ -122,7 +122,17 @@ async function yahooQuote(sym) {
   return { price, prev, t: meta.regularMarketTime ? meta.regularMarketTime * 1000 : Date.now() };
 }
 
-const awesomeFx = () => fetchJson('https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL');
+// Moedas oferecidas na calculadora de câmbio (todas cotadas contra o Real).
+const FX_CCY = [
+  { code: 'USD', name: 'Dólar americano' },
+  { code: 'EUR', name: 'Euro' },
+  { code: 'GBP', name: 'Libra esterlina' },
+  { code: 'ARS', name: 'Peso argentino' },
+  { code: 'CAD', name: 'Dólar canadense' },
+  { code: 'CHF', name: 'Franco suíço' },
+  { code: 'JPY', name: 'Iene japonês' }
+];
+const awesomeFx = () => fetchJson('https://economia.awesomeapi.com.br/json/last/' + FX_CCY.map((c) => c.code + '-BRL').join(','));
 
 /** Séries temporais do Banco Central (SGS). */
 async function sgs(code, n) {
@@ -221,6 +231,20 @@ async function buildIndicators() {
       delta: signed(pct), tone: toneOf(pct), t: Number(o.timestamp) * 1000 || Date.now(), note: 'Cotação de compra (AwesomeAPI)' });
   }
 
+  // --- Câmbio para a calculadora (todas as moedas cotadas em Reais)
+  const fxCalc = { updatedAt: Date.now(), base: 'BRL', source: fx.v ? 'AwesomeAPI' : null,
+    rates: [{ code: 'BRL', name: 'Real brasileiro', bid: 1, pct: 0, t: Date.now() }] };
+  if (fx.v) {
+    FX_CCY.forEach((c) => {
+      const o = fx.v[c.code + 'BRL'];
+      if (!o) return;
+      const bid = parseFloat(o.bid);
+      if (!Number.isFinite(bid)) return;
+      const pct = parseFloat(o.pctChange);
+      fxCalc.rates.push({ code: c.code, name: c.name, bid, pct: Number.isFinite(pct) ? pct : 0, t: Number(o.timestamp) * 1000 || Date.now() });
+    });
+  }
+
   // --- Cotações Yahoo
   QUOTES.forEach((q, i) => {
     const r = quoteRes[i].v;
@@ -283,6 +307,7 @@ async function buildIndicators() {
     updatedAt: Date.now(),
     groups: Object.keys(titles).map((k) => ({ id: k, title: titles[k], items: groups[k] })).filter((g) => g.items.length),
     focus: focusRes.v || null,
+    fx: fxCalc,
     errors
   };
 }
@@ -404,7 +429,7 @@ const INDEX_PATH = path.join(__dirname, 'index.html');
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'no-referrer',
-  'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://sslecal2.investing.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+  'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://sslecal2.investing.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 };
 
 function sendJson(res, obj, status) {
