@@ -50,12 +50,6 @@ const QUOTES = [
   { id: 'ust3m',   group: 'sentimento', name: 'Treasury 3 meses',            sym: '^IRX',    kind: 'yield' }
 ];
 
-// Próximas reuniões de política monetária (datas oficiais; confira e atualize a cada novo calendário anual).
-const FOMC_MEETINGS_2026 = ['2026-01-28', '2026-03-18', '2026-04-29', '2026-06-17', '2026-07-29', '2026-09-16', '2026-10-28', '2026-12-09'];
-const COPOM_MEETINGS_2026 = ['2026-01-28', '2026-03-18', '2026-04-29', '2026-06-17', '2026-08-05', '2026-09-16', '2026-11-04', '2026-12-09'];
-const nextMeeting = (dates) => dates.map((d) => new Date(d + 'T23:59:59Z')).filter((d) => d.getTime() >= Date.now()).sort((a, b) => a - b)[0] || null;
-const fmtDateBR = (d) => d ? d.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
-
 // Valores que não têm série pública simples — atualize quando mudarem (normalmente em janeiro).
 const TETO_INSS = { valor: 8475.55, ano: 2026 };
 const SALARIO_MINIMO_FALLBACK = 1621.0;
@@ -130,10 +124,10 @@ async function yahooQuote(sym) {
   } else {
     prev = meta.chartPreviousClose;
   }
-  return { price, prev, t: meta.regularMarketTime ? meta.regularMarketTime * 1000 : Date.now() };
+  return { price, prev, first: closes.length ? closes[0] : null, t: meta.regularMarketTime ? meta.regularMarketTime * 1000 : Date.now() };
 }
 
-// Moedas oferecidas na calculadora de câmbio (todas cotadas contra o Real).
+// Moedas oferecidas na calculadora de câmbio (todas cotadas contra o Real, via Yahoo Finance — mesma fonte já usada para as demais cotações).
 const FX_CCY = [
   { code: 'USD', name: 'Dólar americano' },
   { code: 'EUR', name: 'Euro' },
@@ -143,11 +137,7 @@ const FX_CCY = [
   { code: 'CHF', name: 'Franco suíço' },
   { code: 'JPY', name: 'Iene japonês' }
 ];
-const fxPair = (code) => fetchJson('https://economia.awesomeapi.com.br/json/last/' + code + '-BRL').then((j) => {
-  const o = j && j[code + 'BRL'];
-  if (!o || !Number.isFinite(parseFloat(o.bid))) throw new Error('par ' + code + '-BRL indisponível');
-  return o;
-});
+const fxPair = (code) => yahooQuote(code + 'BRL=X');
 
 /** Séries temporais do Banco Central (SGS). */
 async function sgs(code, n) {
@@ -231,10 +221,10 @@ async function buildIndicators() {
 
   // --- Mercado brasileiro: dólar/euro
   if (fxByCode.USD) {
-    const o = fxByCode.USD;
-    const pct = parseFloat(o.pctChange);
-    groups.mercado.push({ id: 'usd', name: 'Dólar comercial', value: 'R$ ' + nf(parseFloat(o.bid), 4),
-      delta: signed(pct), tone: toneOf(pct), t: Number(o.timestamp) * 1000 || Date.now(), note: 'Cotação de compra (AwesomeAPI)' });
+    const r = fxByCode.USD;
+    const pct = r.prev ? (r.price / r.prev - 1) * 100 : 0;
+    groups.mercado.push({ id: 'usd', name: 'Dólar comercial', value: 'R$ ' + nf(r.price, 4),
+      delta: r.prev ? signed(pct) : '', tone: toneOf(pct), t: r.t, note: 'Câmbio comercial' });
   } else if (S.usdSgs) {
     const a = S.usdSgs, l = a[a.length - 1], p = a[a.length - 2];
     const pct = p ? (l.valor / p.valor - 1) * 100 : 0;
@@ -242,27 +232,25 @@ async function buildIndicators() {
       delta: p ? signed(pct) : '', tone: toneOf(pct), note: 'PTAX/BCB de ' + l.data });
   }
   if (fxByCode.EUR) {
-    const o = fxByCode.EUR;
-    const pct = parseFloat(o.pctChange);
-    groups.mercado.push({ id: 'eur', name: 'Euro', value: 'R$ ' + nf(parseFloat(o.bid), 4),
-      delta: signed(pct), tone: toneOf(pct), t: Number(o.timestamp) * 1000 || Date.now(), note: 'Cotação de compra (AwesomeAPI)' });
+    const r = fxByCode.EUR;
+    const pct = r.prev ? (r.price / r.prev - 1) * 100 : 0;
+    groups.mercado.push({ id: 'eur', name: 'Euro', value: 'R$ ' + nf(r.price, 4),
+      delta: r.prev ? signed(pct) : '', tone: toneOf(pct), t: r.t, note: 'Câmbio comercial' });
   }
 
   // --- Câmbio para a calculadora (todas as moedas cotadas em Reais; cada uma busca e falha de forma independente)
   const fxCalc = { updatedAt: Date.now(), base: 'BRL', source: null,
     rates: [{ code: 'BRL', name: 'Real brasileiro', bid: 1, pct: 0, t: Date.now() }] };
   FX_CCY.forEach((c) => {
-    const o = fxByCode[c.code];
-    if (!o) return;
-    const bid = parseFloat(o.bid);
-    if (!Number.isFinite(bid)) return;
-    const pct = parseFloat(o.pctChange);
-    fxCalc.rates.push({ code: c.code, name: c.name, bid, pct: Number.isFinite(pct) ? pct : 0, t: Number(o.timestamp) * 1000 || Date.now() });
-    fxCalc.source = 'AwesomeAPI';
+    const r = fxByCode[c.code];
+    if (!r) return;
+    const pct = r.prev ? (r.price / r.prev - 1) * 100 : 0;
+    fxCalc.rates.push({ code: c.code, name: c.name, bid: r.price, pct, t: r.t });
+    fxCalc.source = 'Yahoo Finance';
   });
 
   // --- Cotações Yahoo
-  let yield10 = null, yield3m = null;
+  let yield10 = null, yield3m = null, vixVal = null, dxyVal = null, dxyPrev = null, ibovPrice = null, ibovFirst = null;
   QUOTES.forEach((q, i) => {
     const r = quoteRes[i].v;
     if (!r) return;
@@ -281,22 +269,32 @@ async function buildIndicators() {
         note: q.id === 'arabica' ? 'Referência internacional (ICE); não é o indicador CEPEA/ESALQ do Conilon capixaba'
           : q.id === 'robusta' ? 'Referência internacional (ICE Londres); não é o indicador CEPEA/ESALQ do Conilon capixaba'
           : undefined };
+      if (q.id === 'vix') vixVal = r.price;
+      if (q.id === 'dxy') { dxyVal = r.price; dxyPrev = r.prev; }
+      if (q.id === 'ibov') { ibovPrice = r.price; ibovFirst = r.first; }
     }
     groups[q.group].push(item);
   });
 
-  // --- Sentimento & risco: curva de juros dos EUA e calendário de decisões de juros
+  // --- Sentimento: índice próprio de Medo ↔ FOMO (0 a 100), a partir de VIX, força do dólar e fôlego do Ibovespa na semana
+  if (vixVal != null && dxyVal != null && dxyPrev && ibovPrice != null && ibovFirst) {
+    const clamp = (n) => Math.max(0, Math.min(100, n));
+    const scoreVix = clamp(100 - ((vixVal - 12) / (35 - 12)) * 100);
+    const pctWeek = (ibovPrice / ibovFirst - 1) * 100;
+    const scoreMom = clamp(50 + pctWeek * 10);
+    const dxyPctDay = (dxyVal / dxyPrev - 1) * 100;
+    const scoreDxy = clamp(50 - dxyPctDay * 20);
+    const overall = Math.round((scoreVix + scoreMom + scoreDxy) / 3);
+    const label = overall < 25 ? 'Medo extremo' : overall < 45 ? 'Medo' : overall <= 55 ? 'Neutro' : overall <= 75 ? 'Ganância (FOMO)' : 'Ganância extrema (FOMO)';
+    groups.sentimento.push({ id: 'fomo', name: 'Índice de sentimento (Medo ↔ FOMO)', value: String(overall), unit: '/100',
+      tone: overall < 45 ? 'down' : overall > 55 ? 'up' : 'flat',
+      note: label + ' · calculado a partir do VIX, da força do dólar (DXY) e da variação do Ibovespa na semana — versão própria e simplificada, não é o índice oficial CNN Fear & Greed' });
+  }
   if (yield10 != null && yield3m != null) {
     const spread = yield10 - yield3m;
     groups.sentimento.push({ id: 'curve', name: 'Curva de juros EUA (10a − 3m)', value: signed(spread, 2, ' p.p.'),
       tone: spread < 0 ? 'down' : 'up', note: spread < 0 ? 'Curva invertida — sinal clássico de risco de recessão' : 'Curva normal (positiva)' });
   }
-  const fomcNext = nextMeeting(FOMC_MEETINGS_2026);
-  groups.sentimento.push({ id: 'fomc', name: 'Próxima decisão do Fed (FOMC)', value: fmtDateBR(fomcNext), tone: 'flat',
-    note: 'Calendário oficial 2026 do Federal Reserve' });
-  const copomNext = nextMeeting(COPOM_MEETINGS_2026);
-  groups.sentimento.push({ id: 'copom', name: 'Próxima reunião do Copom', value: fmtDateBR(copomNext), tone: 'flat',
-    note: 'Calendário oficial 2026 do Banco Central' });
 
   // --- Juros e inflação (SGS)
   if (S.selic) {
@@ -464,7 +462,7 @@ const INDEX_PATH = path.join(__dirname, 'index.html');
 const SEC_HEADERS = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'no-referrer',
-  'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://s3.tradingview.com; img-src 'self' data: https://s3.tradingview.com; frame-src https://www.tradingview-widget.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+  'Content-Security-Policy': "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src https://sslecal2.investing.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 };
 
 function sendJson(res, obj, status) {

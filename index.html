@@ -9,41 +9,41 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#0b1f3a; --navy-2:#132b4d; --gold:#b3852c; --gold-soft:#f3e6c9;
-  --bg:#f4f3ef; --surface:#ffffff; --surface-2:#fbfaf7; --text:#12151c; --muted:#5c6270; --line:#e4e1d8;
+  --brand:#4338ca; --brand-2:#9333ea; --accent:#0d9488; --accent-soft:#ccfbf1;
+  --bg:#f6f5fb; --surface:#ffffff; --surface-2:#fbfaff; --text:#161522; --muted:#635f74; --line:#e6e2f2;
   --up:#0a7d43; --up-bg:#e1f4ea; --down:#b3261e; --down-bg:#fbeae9; --flat:#5c6270; --flat-bg:#edece7;
   --warn-bg:#fdf3dc; --warn-text:#6b4e00; --warn-line:#ecd898;
-  --tick-bg:#081527; --tick-text:#e7ebf3;
+  --tick-bg:#150a30; --tick-text:#ede9fe;
   --serif:"Fraunces", Georgia, "Times New Roman", serif;
   --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --navy:#0e2748; --navy-2:#16345c; --gold:#d4af4a; --gold-soft:#2a2213;
-    --bg:#0a0d13; --surface:#111621; --surface-2:#0d121b; --text:#eceef3; --muted:#98a0b0; --line:#232a38;
-    --up:#3ecb85; --up-bg:#0f2e21; --down:#ff6b62; --down-bg:#341413; --flat:#98a0b0; --flat-bg:#1a2030;
+    --brand:#818cf8; --brand-2:#c084fc; --accent:#2dd4bf; --accent-soft:#113b36;
+    --bg:#0b0a14; --surface:#151328; --surface-2:#100e1f; --text:#ede9fe; --muted:#a29cc2; --line:#2a2648;
+    --up:#3ecb85; --up-bg:#0f2e21; --down:#ff6b62; --down-bg:#341413; --flat:#a29cc2; --flat-bg:#211d3c;
     --warn-bg:#2a2210; --warn-text:#eccb6a; --warn-line:#4a3c16;
-    --tick-bg:#05090f; --tick-text:#eef1f7;
+    --tick-bg:#0a0716; --tick-text:#ede9fe;
   }
 }
 :root[data-theme="dark"]{
-  --navy:#0e2748; --navy-2:#16345c; --gold:#d4af4a; --gold-soft:#2a2213;
-  --bg:#0a0d13; --surface:#111621; --surface-2:#0d121b; --text:#eceef3; --muted:#98a0b0; --line:#232a38;
-  --up:#3ecb85; --up-bg:#0f2e21; --down:#ff6b62; --down-bg:#341413; --flat:#98a0b0; --flat-bg:#1a2030;
+  --brand:#818cf8; --brand-2:#c084fc; --accent:#2dd4bf; --accent-soft:#113b36;
+  --bg:#0b0a14; --surface:#151328; --surface-2:#100e1f; --text:#ede9fe; --muted:#a29cc2; --line:#2a2648;
+  --up:#3ecb85; --up-bg:#0f2e21; --down:#ff6b62; --down-bg:#341413; --flat:#a29cc2; --flat-bg:#211d3c;
   --warn-bg:#2a2210; --warn-text:#eccb6a; --warn-line:#4a3c16;
-  --tick-bg:#05090f; --tick-text:#eef1f7;
+  --tick-bg:#0a0716; --tick-text:#ede9fe;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
 .wrap{max-width:820px;margin:0 auto;padding:0 16px 56px}
 
+/* ---------- barra de identidade ---------- */
+.brandbar{height:3px;background:linear-gradient(90deg,var(--brand),var(--brand-2),var(--accent))}
+
 /* ---------- fita de cotações ---------- */
-.ticker{background:var(--tick-bg);color:var(--tick-text);overflow:hidden;white-space:nowrap;border-bottom:1px solid rgba(212,175,74,.25)}
-.ticker-track{display:inline-flex;align-items:center;gap:34px;padding:8px 0;animation:ticker-scroll 42s linear infinite}
-@media (hover: hover) and (pointer: fine){ .ticker:hover .ticker-track{animation-play-state:paused} }
-@media (prefers-reduced-motion: reduce){.ticker-track{animation:none}.ticker{overflow-x:auto}}
-@keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker{background:var(--tick-bg);color:var(--tick-text);overflow:hidden;white-space:nowrap;border-bottom:1px solid rgba(45,212,191,.25)}
+.ticker-track{display:inline-flex;align-items:center;gap:34px;padding:8px 0;will-change:transform}
 .tick-item{display:inline-flex;align-items:baseline;gap:7px;font-size:.8rem;font-weight:600;letter-spacing:.01em}
 .tick-item .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:1px}
 .tick-item .dot.up{background:#3ecb85} .tick-item .dot.down{background:#ff6b62} .tick-item .dot.flat{background:#6b7386}
@@ -54,11 +54,11 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
 .tick-sep{opacity:.25}
 
 /* ---------- cabeçalho ---------- */
-header{background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);color:#f2f4f8;padding:22px 0 20px;border-bottom:2px solid var(--gold)}
+header{background:linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);color:#f2f4f8;padding:22px 0 20px;border-bottom:2px solid var(--accent)}
 .brand{display:flex;align-items:center;gap:12px}
 .mark{flex:0 0 auto;width:34px;height:34px}
 .wordmark{font-family:var(--serif);font-weight:600;font-size:1.5rem;letter-spacing:.01em;margin:0;color:#fff}
-.tagline{margin:2px 0 0;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);opacity:.9;font-weight:600}
+.tagline{margin:2px 0 0;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);opacity:.9;font-weight:600}
 .headrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .sub{color:#c7cedb;font-size:.83rem;margin:12px 0 0}
 .status{display:flex;align-items:center;gap:8px;font-size:.78rem;color:#c7cedb;margin:6px 0 0}
@@ -75,32 +75,32 @@ header{background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);co
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:0 0 auto;appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:.82rem;letter-spacing:.03em;text-transform:uppercase;padding:14px 16px 12px;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
 .tab:hover{color:var(--text)}
-.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--gold)}
-.tab:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,.iconbtn:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+.tab:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,.iconbtn:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .tools{margin:16px 0 4px}
 .search{width:100%;font:inherit;font-size:.95rem;padding:11px 13px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text)}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-size:.78rem;font-weight:600;padding:6px 12px;border-radius:99px;cursor:pointer;white-space:nowrap}
-.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
-:root[data-theme="dark"] .chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#241b04}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#241b04}}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#241b04}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#241b04}}
 .count{color:var(--muted);font-size:.78rem;margin:10px 0 0}
 
 /* ---------- cartões ---------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0;border-left:3px solid transparent;box-shadow:0 1px 2px rgba(10,15,25,.04);transition:border-color .15s,box-shadow .15s}
-.card:hover{border-left-color:var(--gold);box-shadow:0 4px 14px rgba(10,15,25,.07)}
+.card:hover{border-left-color:var(--accent);box-shadow:0 4px 14px rgba(10,15,25,.07)}
 .meta{display:flex;flex-wrap:wrap;gap:9px;align-items:center;font-size:.72rem;color:var(--muted)}
-.tag{background:var(--navy);color:#fff;padding:2px 9px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.66rem}
-:root[data-theme="dark"] .tag{background:var(--gold);color:#241b04}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag{background:var(--gold);color:#241b04}}
+.tag{background:var(--brand);color:#fff;padding:2px 9px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.66rem}
+:root[data-theme="dark"] .tag{background:var(--accent);color:#241b04}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag{background:var(--accent);color:#241b04}}
 .tag.impact{background:var(--down)}
 .title{font-family:var(--serif);font-size:1.12rem;line-height:1.34;margin:9px 0 5px;font-weight:600}
 .text{margin:0 0 9px;color:var(--muted);font-size:.9rem}
-.src{font-size:.78rem;font-weight:700;color:var(--navy);text-decoration:none}
-:root[data-theme="dark"] .src{color:var(--gold)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .src{color:var(--gold)}}
+.src{font-size:.78rem;font-weight:700;color:var(--brand);text-decoration:none}
+:root[data-theme="dark"] .src{color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .src{color:var(--accent)}}
 .src:hover{text-decoration:underline}
 .empty{color:var(--muted);text-align:center;padding:32px 8px}
 .err{background:var(--down-bg);color:var(--down);border-radius:6px;padding:10px 12px;font-size:.85rem;margin:12px 0}
@@ -129,12 +129,12 @@ th{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.
 tr:last-child td{border-bottom:0}
 
 /* ---------- calendário ---------- */
-.calwrap{overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:2px;min-height:640px}
-.calwrap .tradingview-widget-container__widget{min-height:636px}
+.calwrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.calwrap iframe{display:block;width:100%;min-width:600px;height:680px;border:0}
 .powered{font-size:.7rem;color:var(--muted);margin:8px 0 0}
-.powered a{color:var(--navy);font-weight:700;text-decoration:none}
-:root[data-theme="dark"] .powered a{color:var(--gold)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .powered a{color:var(--gold)}}
+.powered a{color:var(--brand);font-weight:700;text-decoration:none}
+:root[data-theme="dark"] .powered a{color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .powered a{color:var(--accent)}}
 
 /* ---------- calculadora de câmbio ---------- */
 .fx-card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;margin:16px 0}
@@ -142,16 +142,27 @@ tr:last-child td{border-bottom:0}
 .fx-field label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 6px}
 .fx-field select{width:100%;font:inherit;font-size:.92rem;font-weight:600;padding:11px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--text)}
 .fx-amount{width:100%;font:inherit;font-size:1.6rem;font-family:var(--serif);font-weight:600;padding:10px 2px;border:0;border-bottom:2px solid var(--line);background:transparent;color:var(--text)}
-.fx-amount:focus{border-bottom-color:var(--gold);outline:0}
+.fx-amount:focus{border-bottom-color:var(--accent);outline:0}
 .fx-swap{appearance:none;border:1px solid var(--line);background:var(--surface-2);color:var(--text);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;margin-bottom:2px}
-.fx-swap:hover{border-color:var(--gold);color:var(--gold)}
+.fx-swap:hover{border-color:var(--accent);color:var(--accent)}
 .fx-result{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
 .fx-result .label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
-.fx-result .value{font-family:var(--serif);font-size:2.3rem;font-weight:700;color:var(--navy);margin:4px 0;overflow-wrap:anywhere}
-:root[data-theme="dark"] .fx-result .value{color:var(--gold)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fx-result .value{color:var(--gold)}}
+.fx-result .value{font-family:var(--serif);font-size:2.3rem;font-weight:700;color:var(--brand);margin:4px 0;overflow-wrap:anywhere}
+:root[data-theme="dark"] .fx-result .value{color:var(--accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fx-result .value{color:var(--accent)}}
 .fx-rate{font-size:.82rem;color:var(--muted)}
 .fx-updated{font-size:.72rem;color:var(--muted);margin-top:10px}
+
+/* ---------- gauge de sentimento (Medo ↔ FOMO) ---------- */
+.gauge-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0;box-shadow:0 1px 2px rgba(10,15,25,.04)}
+.gauge-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.gauge-score{font-family:var(--serif);font-size:2.6rem;font-weight:700;color:var(--brand)}
+:root[data-theme="dark"] .gauge-score{color:var(--brand)}
+.gauge-label{font-size:.85rem;font-weight:700;padding:4px 12px;border-radius:99px}
+.gauge-track{position:relative;height:10px;border-radius:99px;margin:16px 0 8px;background:linear-gradient(90deg,#b3261e,#e07a1f,#e0c11f,#4fae5c,#0d9488)}
+.gauge-marker{position:absolute;top:-5px;width:20px;height:20px;border-radius:50%;background:var(--surface);border:3px solid var(--text);transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.gauge-scale{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.gauge-note{font-size:.8rem;color:var(--muted);margin-top:14px;line-height:1.5}
 
 footer{margin-top:30px;color:var(--muted);font-size:.75rem;line-height:1.6}
 footer p{margin:0 0 8px}
@@ -160,6 +171,7 @@ footer p{margin:0 0 8px}
 </head>
 <body>
 
+<div class="brandbar"></div>
 <div class="ticker" id="tickerbar" aria-label="Cotações em destaque" role="status">
   <div class="ticker-track" id="tickertrack"></div>
 </div>
@@ -169,9 +181,9 @@ footer p{margin:0 0 8px}
     <div class="headrow">
       <div class="brand">
         <svg class="mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1" y="1" width="38" height="38" rx="3" stroke="#d4af4a" stroke-width="1.4"/>
-          <path d="M8 27L15.5 17.5L21 23L32 10" stroke="#d4af4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M25 10H32V17" stroke="#d4af4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="1" y="1" width="38" height="38" rx="9" stroke="#2dd4bf" stroke-width="1.4"/>
+          <path d="M8 27L15.5 17.5L21 23L32 10" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M25 10H32V17" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <div>
           <p class="wordmark">Painel Financeiro</p>
@@ -206,8 +218,8 @@ footer p{margin:0 0 8px}
 
   <section id="panel-cal" role="tabpanel" aria-labelledby="tab-cal" hidden>
     <p class="hint">Calendário econômico com os eventos que costumam mexer no mercado (juros, inflação, emprego, PIB). O resultado (“Atual”) aparece assim que é divulgado. Use o seletor do próprio calendário para trocar o dia ou o fuso horário.</p>
-    <div class="calwrap" id="tvCalendar"></div>
-    <p class="powered">Calendário econômico fornecido por <a href="https://br.tradingview.com/economic-calendar/" target="_blank" rel="noopener noreferrer">TradingView</a> — mesmas informações do Investing (país, importância, atual, projeção e anterior).</p>
+    <div class="calwrap"><iframe id="calframe" title="Calendário econômico" loading="lazy" referrerpolicy="no-referrer"></iframe></div>
+    <p class="powered">Calendário Econômico fornecido por <a href="https://br.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer">Investing.com Brasil</a>, o portal líder financeiro.</p>
     <div class="group"><h2>Notícias de alto impacto agora</h2><div id="impact"></div></div>
   </section>
 
@@ -255,7 +267,8 @@ footer p{margin:0 0 8px}
   </section>
 
   <section id="panel-sent" role="tabpanel" aria-labelledby="tab-sent" hidden>
-    <p class="hint">Indicadores de sentimento e risco acompanhados por mesas de mercado: volatilidade (VIX), força do dólar (DXY), curva de juros dos EUA e o calendário de decisões do Fed e do Copom.</p>
+    <p class="hint">Medo ↔ FOMO: um termômetro de 0 a 100 do humor do mercado, calculado a partir do VIX, da força do dólar e do fôlego do Ibovespa na semana — quanto mais alto, mais o mercado está em modo "ganância/FOMO"; quanto mais baixo, mais em modo "medo".</p>
+    <div id="fomoGauge"></div>
     <div id="sent"><div class="group"><div class="grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></div></div>
   </section>
 
@@ -337,6 +350,37 @@ function renderTicker(){
   renderSet();
   box.appendChild(el('span', 'tick-sep', '\u00a0\u00a0\u00a0'));
   renderSet(); // duplicado para o loop contínuo da animação
+  startTickerAnimation();
+}
+
+// Animação da fita por JavaScript (mais confiável entre aparelhos do que um @keyframes puro em CSS).
+let tickerAnim = { running: false, pos: 0, paused: false };
+function startTickerAnimation(){
+  if (tickerAnim.running) return; // já rodando; renderTicker() só troca o conteúdo, o loop continua
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced){ $('#tickerbar').style.overflowX = 'auto'; return; }
+  tickerAnim.running = true;
+  const track = $('#tickertrack');
+  const speed = 36; // pixels por segundo
+  let last = null;
+  function step(ts){
+    if (!tickerAnim.paused){
+      if (last == null) last = ts;
+      const dt = Math.min(0.1, (ts - last) / 1000);
+      tickerAnim.pos -= speed * dt;
+      const halfWidth = track.scrollWidth / 2;
+      if (halfWidth > 0 && -tickerAnim.pos >= halfWidth) tickerAnim.pos += halfWidth;
+      track.style.transform = 'translateX(' + tickerAnim.pos.toFixed(1) + 'px)';
+    }
+    last = ts;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+  if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches){
+    const bar = $('#tickerbar');
+    bar.addEventListener('mouseenter', () => { tickerAnim.paused = true; });
+    bar.addEventListener('mouseleave', () => { tickerAnim.paused = false; last = null; });
+  }
 }
 
 /* ---------------- Notícias ---------------- */
@@ -480,13 +524,44 @@ function renderInd(){
   }
 }
 
+function renderFomoGauge(){
+  const box = $('#fomoGauge');
+  box.textContent = '';
+  const d = state.ind;
+  const group = d && d.groups.find((g) => g.id === 'sentimento');
+  const item = group && group.items.find((i) => i.id === 'fomo');
+  if (!item){ return; }
+  const score = Math.max(0, Math.min(100, parseInt(item.value, 10) || 50));
+  const card = el('div', 'gauge-card');
+  const top = el('div', 'gauge-top');
+  top.appendChild(el('div', 'gauge-score', String(score)));
+  const noteParts = (item.note || '').split(' · ');
+  const labelText = noteParts[0] || '';
+  const label = el('div', 'gauge-label ' + (item.tone || 'flat'), labelText);
+  label.style.background = item.tone === 'up' ? 'var(--up-bg)' : item.tone === 'down' ? 'var(--down-bg)' : 'var(--flat-bg)';
+  label.style.color = item.tone === 'up' ? 'var(--up)' : item.tone === 'down' ? 'var(--down)' : 'var(--flat)';
+  top.appendChild(label);
+  card.appendChild(top);
+  const track = el('div', 'gauge-track');
+  const marker = el('div', 'gauge-marker');
+  marker.style.left = score + '%';
+  track.appendChild(marker);
+  card.appendChild(track);
+  const scale = el('div', 'gauge-scale');
+  ['Medo extremo', 'Medo', 'Neutro', 'Ganância', 'FOMO extremo'].forEach((t) => scale.appendChild(el('span', '', t)));
+  card.appendChild(scale);
+  card.appendChild(el('div', 'gauge-note', noteParts.slice(1).join(' · ') || 'Calculado a partir do VIX, do DXY e da variação semanal do Ibovespa.'));
+  box.appendChild(card);
+}
+
 function renderSent(){
   const root = $('#sent');
   root.textContent = '';
   const d = state.ind;
   if (!d) return;
-  const groups = d.groups.filter((g) => g.id === 'sentimento');
-  if (!groups.length){
+  const groups = d.groups.filter((g) => g.id === 'sentimento').map((g) => ({ ...g, items: g.items.filter((i) => i.id !== 'fomo') }));
+  renderFomoGauge();
+  if (!groups.some((g) => g.items.length)){
     root.appendChild(el('p', 'empty', 'Indicadores de sentimento indisponíveis no momento.'));
     return;
   }
@@ -603,7 +678,7 @@ async function loadInd(){
 function renderFooter(){
   const f = $('#footer');
   f.textContent = '';
-  f.appendChild(el('p', '', 'Conteúdo informativo, sem caráter de recomendação de investimento. Cotações vêm de fontes públicas e podem ter atraso de alguns minutos; séries oficiais (Selic, IPCA, PNAD etc.) vêm do Banco Central e só mudam quando há nova divulgação. Notícias são filtradas para temas de mercado financeiro e mostram apenas título e trecho inicial: abra o link para a matéria completa. O calendário econômico é fornecido pela TradingView, com as mesmas informações do Investing (país, importância, atual, projeção e anterior). Café Arábica e Robusta/Conilon seguem os contratos futuros internacionais da ICE, referência de mercado — não o indicador regional CEPEA/ESALQ.'));
+  f.appendChild(el('p', '', 'Conteúdo informativo, sem caráter de recomendação de investimento. Cotações vêm de fontes públicas e podem ter atraso de alguns minutos; séries oficiais (Selic, IPCA, PNAD etc.) vêm do Banco Central e só mudam quando há nova divulgação. Notícias são filtradas para temas de mercado financeiro e mostram apenas título e trecho inicial: abra o link para a matéria completa. O calendário econômico é do Investing.com. Café Arábica e Robusta/Conilon seguem os contratos futuros internacionais da ICE, referência de mercado — não o indicador regional CEPEA/ESALQ. O índice de sentimento (Medo/FOMO) é um cálculo próprio e simplificado, não o índice oficial CNN Fear & Greed.'));
   const fails = [];
   if (state.ind && state.ind.errors) state.ind.errors.forEach((e) => fails.push(e.id));
   if (state.news && state.news.sources) state.news.sources.filter((s) => !s.ok).forEach((s) => fails.push(s.name));
@@ -617,27 +692,8 @@ function renderFooter(){
 /* ---------------- Abas ---------------- */
 const tabs = { news: $('#tab-news'), cal: $('#tab-cal'), fx: $('#tab-fx'), ind: $('#tab-ind'), sent: $('#tab-sent') };
 const panels = { news: $('#panel-news'), cal: $('#panel-cal'), fx: $('#panel-fx'), ind: $('#panel-ind'), sent: $('#panel-sent') };
+const CAL_URL = 'https://sslecal2.investing.com?columns=exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&importance=2,3&features=datepicker,timezone&countries=32,5,72,37,35,4,17&calType=day&timeZone=12&lang=12';
 let calLoaded = false;
-
-function loadCalendarWidget(){
-  const box = $('#tvCalendar');
-  box.textContent = '';
-  const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const widgetDiv = el('div', 'tradingview-widget-container__widget');
-  box.appendChild(widgetDiv);
-  const script = document.createElement('script');
-  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-events.js';
-  script.async = true;
-  script.text = JSON.stringify({
-    width: '100%', height: 636,
-    colorTheme: dark ? 'dark' : 'light',
-    isTransparent: true,
-    locale: 'br',
-    importanceFilter: '-1,0,1',
-    countryFilter: 'br,us,eu,cn,jp,gb,de'
-  });
-  box.appendChild(script);
-}
 
 function showTab(name){
   Object.keys(tabs).forEach((k) => {
@@ -645,7 +701,7 @@ function showTab(name){
     tabs[k].setAttribute('aria-selected', String(on));
     panels[k].hidden = !on;
   });
-  if (name === 'cal' && !calLoaded){ loadCalendarWidget(); calLoaded = true; }
+  if (name === 'cal' && !calLoaded){ $('#calframe').src = CAL_URL; calLoaded = true; }
   try { localStorage.setItem('painel-tab', name); } catch (e) {}
   window.scrollTo({ top: 0 });
 }
