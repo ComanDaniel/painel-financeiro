@@ -41,10 +41,12 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans)}
 /* ---------- fita de cotações ---------- */
 .ticker{background:var(--tick-bg);color:var(--tick-text);overflow:hidden;white-space:nowrap;border-bottom:1px solid rgba(212,175,74,.25)}
 .ticker-track{display:inline-flex;align-items:center;gap:34px;padding:8px 0;animation:ticker-scroll 42s linear infinite}
-.ticker:hover .ticker-track{animation-play-state:paused}
+@media (hover: hover) and (pointer: fine){ .ticker:hover .ticker-track{animation-play-state:paused} }
 @media (prefers-reduced-motion: reduce){.ticker-track{animation:none}.ticker{overflow-x:auto}}
 @keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tick-item{display:inline-flex;align-items:baseline;gap:7px;font-size:.8rem;font-weight:600;letter-spacing:.01em}
+.tick-item .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:1px}
+.tick-item .dot.up{background:#3ecb85} .tick-item .dot.down{background:#ff6b62} .tick-item .dot.flat{background:#6b7386}
 .tick-item .n{color:var(--tick-text);opacity:.65;font-weight:600;text-transform:uppercase;font-size:.68rem;letter-spacing:.06em}
 .tick-item .v{font-variant-numeric:tabular-nums}
 .tick-item .d{font-variant-numeric:tabular-nums}
@@ -71,7 +73,8 @@ header{background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);co
 /* ---------- navegação ---------- */
 .tabs{position:sticky;top:0;z-index:5;display:flex;gap:2px;background:var(--surface);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:.82rem;letter-spacing:.03em;text-transform:uppercase;padding:14px 16px 12px;cursor:pointer;border-bottom:3px solid transparent}
+.tab{flex:0 0 auto;appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:.82rem;letter-spacing:.03em;text-transform:uppercase;padding:14px 16px 12px;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--text)}
 .tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--gold)}
 .tab:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,.iconbtn:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
@@ -86,8 +89,8 @@ header{background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);co
 .count{color:var(--muted);font-size:.78rem;margin:10px 0 0}
 
 /* ---------- cartões ---------- */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px 18px;margin:12px 0;border-left:3px solid transparent}
-.card:hover{border-left-color:var(--gold)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0;border-left:3px solid transparent;box-shadow:0 1px 2px rgba(10,15,25,.04);transition:border-color .15s,box-shadow .15s}
+.card:hover{border-left-color:var(--gold);box-shadow:0 4px 14px rgba(10,15,25,.07)}
 .meta{display:flex;flex-wrap:wrap;gap:9px;align-items:center;font-size:.72rem;color:var(--muted)}
 .tag{background:var(--navy);color:#fff;padding:2px 9px;border-radius:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.66rem}
 :root[data-theme="dark"] .tag{background:var(--gold);color:#241b04}
@@ -106,7 +109,8 @@ header{background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);co
 .group{margin:26px 0 0}
 .group h2{font-family:var(--serif);font-size:1.02rem;font-weight:600;color:var(--text);margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.tile{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:13px 15px;min-width:0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px;min-width:0;box-shadow:0 1px 2px rgba(10,15,25,.04);transition:box-shadow .15s,transform .15s}
+.tile:hover{box-shadow:0 4px 14px rgba(10,15,25,.07);transform:translateY(-1px)}
 .tile .n{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 .tile .v{font-family:var(--serif);font-size:1.3rem;font-weight:600;letter-spacing:-.005em;margin:3px 0;overflow-wrap:anywhere}
 .tile .u{font-family:var(--sans);font-size:.72rem;color:var(--muted);font-weight:600;margin-left:3px}
@@ -117,7 +121,7 @@ header{background:linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);co
 .tile .note{font-size:.71rem;color:var(--muted);margin-top:7px;line-height:1.4}
 .skel{height:78px;border-radius:4px;background:var(--line);opacity:.5}
 
-.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-size:.87rem;min-width:320px}
 th,td{padding:11px 15px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
 th:first-child,td:first-child{text-align:left;font-variant-numeric:normal}
@@ -125,8 +129,8 @@ th{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.
 tr:last-child td{border-bottom:0}
 
 /* ---------- calendário ---------- */
-.calwrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
-.calwrap iframe{display:block;width:100%;min-width:600px;height:680px;border:0}
+.calwrap{overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:2px;min-height:640px}
+.calwrap .tradingview-widget-container__widget{min-height:636px}
 .powered{font-size:.7rem;color:var(--muted);margin:8px 0 0}
 .powered a{color:var(--navy);font-weight:700;text-decoration:none}
 :root[data-theme="dark"] .powered a{color:var(--gold)}
@@ -187,6 +191,7 @@ footer p{margin:0 0 8px}
     <button class="tab" role="tab" id="tab-cal" aria-controls="panel-cal" aria-selected="false">Calendário</button>
     <button class="tab" role="tab" id="tab-fx" aria-controls="panel-fx" aria-selected="false">Câmbio</button>
     <button class="tab" role="tab" id="tab-ind" aria-controls="panel-ind" aria-selected="false">Indicadores</button>
+    <button class="tab" role="tab" id="tab-sent" aria-controls="panel-sent" aria-selected="false">Sentimento</button>
   </div>
 
   <section id="panel-news" role="tabpanel" aria-labelledby="tab-news">
@@ -201,8 +206,8 @@ footer p{margin:0 0 8px}
 
   <section id="panel-cal" role="tabpanel" aria-labelledby="tab-cal" hidden>
     <p class="hint">Calendário econômico com os eventos que costumam mexer no mercado (juros, inflação, emprego, PIB). O resultado (“Atual”) aparece assim que é divulgado. Use o seletor do próprio calendário para trocar o dia ou o fuso horário.</p>
-    <div class="calwrap"><iframe id="calframe" title="Calendário econômico" loading="lazy" referrerpolicy="no-referrer"></iframe></div>
-    <p class="powered">Calendário Econômico fornecido por <a href="https://br.investing.com/economic-calendar/" target="_blank" rel="noopener noreferrer">Investing.com Brasil</a>, o portal líder financeiro.</p>
+    <div class="calwrap" id="tvCalendar"></div>
+    <p class="powered">Calendário econômico fornecido por <a href="https://br.tradingview.com/economic-calendar/" target="_blank" rel="noopener noreferrer">TradingView</a> — mesmas informações do Investing (país, importância, atual, projeção e anterior).</p>
     <div class="group"><h2>Notícias de alto impacto agora</h2><div id="impact"></div></div>
   </section>
 
@@ -247,6 +252,11 @@ footer p{margin:0 0 8px}
   <section id="panel-ind" role="tabpanel" aria-labelledby="tab-ind" hidden>
     <div id="inderr"></div>
     <div id="ind"><div class="group"><div class="grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></div></div>
+  </section>
+
+  <section id="panel-sent" role="tabpanel" aria-labelledby="tab-sent" hidden>
+    <p class="hint">Indicadores de sentimento e risco acompanhados por mesas de mercado: volatilidade (VIX), força do dólar (DXY), curva de juros dos EUA e o calendário de decisões do Fed e do Copom.</p>
+    <div id="sent"><div class="group"><div class="grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></div></div>
   </section>
 
   <footer id="footer"></footer>
@@ -308,7 +318,7 @@ function renderTicker(){
   if (!d){ return; }
   const flat = [];
   d.groups.forEach((g) => g.items.forEach((i) => flat.push(i)));
-  const order = ['ibov', 'usd', 'eur', 'sp500', 'nasdaq', 'btc', 'brent', 'ouro', 'ust10'];
+  const order = ['ibov', 'usd', 'eur', 'sp500', 'nasdaq', 'btc', 'arabica', 'brent', 'ouro', 'ust10', 'vix'];
   flat.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
   const picked = flat.filter((i) => order.includes(i.id));
   if (!picked.length){ return; }
@@ -316,6 +326,7 @@ function renderTicker(){
   const renderSet = () => {
     picked.forEach((i, idx) => {
       const item = el('span', 'tick-item');
+      item.appendChild(el('span', 'dot ' + (i.tone || 'flat')));
       item.appendChild(el('span', 'n', i.name));
       item.appendChild(el('span', 'v', i.value + (i.unit ? ' ' + i.unit : '')));
       if (i.delta) item.appendChild(el('span', 'd ' + (i.tone || 'flat'), i.delta));
@@ -416,13 +427,8 @@ async function loadNews(){
 }
 
 /* ---------------- Indicadores ---------------- */
-function renderInd(){
-  const root = $('#ind');
-  root.textContent = '';
-  const d = state.ind;
-  if (!d) return;
-
-  d.groups.forEach((g) => {
+function renderGroupTiles(root, groups){
+  groups.forEach((g) => {
     const sec = el('div', 'group');
     sec.appendChild(el('h2', '', g.title));
     const grid = el('div', 'grid');
@@ -440,6 +446,15 @@ function renderInd(){
     sec.appendChild(grid);
     root.appendChild(sec);
   });
+}
+
+function renderInd(){
+  const root = $('#ind');
+  root.textContent = '';
+  const d = state.ind;
+  if (!d) return;
+
+  renderGroupTiles(root, d.groups.filter((g) => g.id !== 'sentimento'));
 
   if (d.focus){
     const fsec = el('div', 'group');
@@ -463,6 +478,19 @@ function renderInd(){
     fsec.appendChild(wrap);
     root.appendChild(fsec);
   }
+}
+
+function renderSent(){
+  const root = $('#sent');
+  root.textContent = '';
+  const d = state.ind;
+  if (!d) return;
+  const groups = d.groups.filter((g) => g.id === 'sentimento');
+  if (!groups.length){
+    root.appendChild(el('p', 'empty', 'Indicadores de sentimento indisponíveis no momento.'));
+    return;
+  }
+  renderGroupTiles(root, groups);
 }
 
 /* ---------------- Calculadora de câmbio ---------------- */
@@ -562,6 +590,7 @@ async function loadInd(){
       $('#inderr').appendChild(el('div', 'err', 'Nenhuma fonte de cotações respondeu agora. Tente atualizar em instantes.'));
     }
     renderInd();
+    renderSent();
     renderTicker();
     renderFx();
     renderFooter();
@@ -574,7 +603,7 @@ async function loadInd(){
 function renderFooter(){
   const f = $('#footer');
   f.textContent = '';
-  f.appendChild(el('p', '', 'Conteúdo informativo, sem caráter de recomendação de investimento. Cotações vêm de fontes públicas e podem ter atraso de alguns minutos; séries oficiais (Selic, IPCA, PNAD etc.) vêm do Banco Central e só mudam quando há nova divulgação. Notícias são filtradas para temas de mercado financeiro e mostram apenas título e trecho inicial: abra o link para a matéria completa. O calendário econômico é do Investing.com.'));
+  f.appendChild(el('p', '', 'Conteúdo informativo, sem caráter de recomendação de investimento. Cotações vêm de fontes públicas e podem ter atraso de alguns minutos; séries oficiais (Selic, IPCA, PNAD etc.) vêm do Banco Central e só mudam quando há nova divulgação. Notícias são filtradas para temas de mercado financeiro e mostram apenas título e trecho inicial: abra o link para a matéria completa. O calendário econômico é fornecido pela TradingView, com as mesmas informações do Investing (país, importância, atual, projeção e anterior). Café Arábica e Robusta/Conilon seguem os contratos futuros internacionais da ICE, referência de mercado — não o indicador regional CEPEA/ESALQ.'));
   const fails = [];
   if (state.ind && state.ind.errors) state.ind.errors.forEach((e) => fails.push(e.id));
   if (state.news && state.news.sources) state.news.sources.filter((s) => !s.ok).forEach((s) => fails.push(s.name));
@@ -586,10 +615,29 @@ function renderFooter(){
 }
 
 /* ---------------- Abas ---------------- */
-const tabs = { news: $('#tab-news'), cal: $('#tab-cal'), fx: $('#tab-fx'), ind: $('#tab-ind') };
-const panels = { news: $('#panel-news'), cal: $('#panel-cal'), fx: $('#panel-fx'), ind: $('#panel-ind') };
-const CAL_URL = 'https://sslecal2.investing.com?columns=exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&importance=2,3&features=datepicker,timezone&countries=32,5,72,37,35,4,17&calType=day&timeZone=12&lang=12';
+const tabs = { news: $('#tab-news'), cal: $('#tab-cal'), fx: $('#tab-fx'), ind: $('#tab-ind'), sent: $('#tab-sent') };
+const panels = { news: $('#panel-news'), cal: $('#panel-cal'), fx: $('#panel-fx'), ind: $('#panel-ind'), sent: $('#panel-sent') };
 let calLoaded = false;
+
+function loadCalendarWidget(){
+  const box = $('#tvCalendar');
+  box.textContent = '';
+  const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const widgetDiv = el('div', 'tradingview-widget-container__widget');
+  box.appendChild(widgetDiv);
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-events.js';
+  script.async = true;
+  script.text = JSON.stringify({
+    width: '100%', height: 636,
+    colorTheme: dark ? 'dark' : 'light',
+    isTransparent: true,
+    locale: 'br',
+    importanceFilter: '-1,0,1',
+    countryFilter: 'br,us,eu,cn,jp,gb,de'
+  });
+  box.appendChild(script);
+}
 
 function showTab(name){
   Object.keys(tabs).forEach((k) => {
@@ -597,7 +645,7 @@ function showTab(name){
     tabs[k].setAttribute('aria-selected', String(on));
     panels[k].hidden = !on;
   });
-  if (name === 'cal' && !calLoaded){ $('#calframe').src = CAL_URL; calLoaded = true; }
+  if (name === 'cal' && !calLoaded){ loadCalendarWidget(); calLoaded = true; }
   try { localStorage.setItem('painel-tab', name); } catch (e) {}
   window.scrollTo({ top: 0 });
 }
